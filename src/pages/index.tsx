@@ -4,14 +4,21 @@ import excel from "exceljs";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Chart } from "./_chart";
+
+interface Data {
+  [key: string]: number | string;
+  name: string;
+}
+
 const Home = () => {
-  const [data, setData] = useState<unknown>([]);
+  const [data, setData] = useState<Data[]>([]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const data = new FormData(e.currentTarget);
-    const file = data.get("file") as File;
+    const formData = new FormData(e.currentTarget);
+    const file = formData.get("file") as File;
 
     if (!file) {
       toast.error("Lütfen bir dosya seçin.");
@@ -24,9 +31,20 @@ const Home = () => {
     await workbook.xlsx.load(buffer);
     const worksheet = workbook.getWorksheet(1)!;
 
-    const rows = worksheet.getSheetValues();
-    setData(rows);
+    const columns = worksheet.getColumn(1).values.filter(Boolean);
+    const values = worksheet.columns
+      .slice(1)
+      .map((column) => column.values!.filter(Boolean));
 
+    const data: Data[] = columns.map((name, i) => {
+      const obj: Data = { name: name as string };
+      values.forEach((column, j) => {
+        obj[`value${j + 1}`] = column[i] as number;
+      });
+      return obj;
+    });
+
+    setData(data);
     toast.success("Excel dosyası başarıyla yüklendi.");
   };
 
@@ -52,7 +70,7 @@ const Home = () => {
           </Card>
         </div>
         <div className="col-span-12 md:col-span-8">
-          {JSON.stringify(data, null, 2)}
+          <Chart data={data} />
         </div>
       </div>
     </div>
