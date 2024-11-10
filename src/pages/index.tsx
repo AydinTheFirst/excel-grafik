@@ -49,7 +49,7 @@ const Home = () => {
   };
 
   return (
-    <div className="container my-10">
+    <div className="container my-10 h-screen">
       <div className="grid grid-cols-12 gap-3">
         <div className="col-span-12 md:col-span-4">
           <Card>
@@ -69,7 +69,7 @@ const Home = () => {
             </CardBody>
           </Card>
         </div>
-        <div className="col-span-12 md:col-span-8">
+        <div className="col-span-12 h-full md:col-span-8">
           <Chart data={data} />
         </div>
       </div>

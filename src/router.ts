@@ -3,7 +3,7 @@
 
 import { components, hooks, utils } from "@generouted/react-router/client";
 
-export type Path = `/` | `/line` | `/login` | `/register`;
+export type Path = `/` | `/bars` | `/line` | `/login` | `/register`;
 
 export type Params = {};
 

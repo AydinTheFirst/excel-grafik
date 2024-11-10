@@ -1,8 +1,8 @@
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,19 +14,21 @@ interface Data {
   name: string;
 }
 
-const randomHexColor = () =>
-  "#" + Math.floor(Math.random() * 16777215).toString(16);
-
 export const Chart = ({ data }: { data: Data[] }) => {
+  console.log(data);
+
   if (data.length === 0) {
     return null;
   }
 
+  const randomHexColor = () =>
+    "#" + Math.floor(Math.random() * 16777215).toString(16);
+
   const lines = Object.keys(data[0]).filter((key) => key !== "name");
 
   return (
-    <ResponsiveContainer height="100%" width="100%">
-      <LineChart
+    <ResponsiveContainer width="100%">
+      <BarChart
         data={data}
         height={300}
         margin={{
@@ -43,14 +45,9 @@ export const Chart = ({ data }: { data: Data[] }) => {
         <Tooltip />
         <Legend />
         {lines.map((line) => (
-          <Line
-            dataKey={line}
-            key={line}
-            stroke={randomHexColor()}
-            type="monotone"
-          />
+          <Bar dataKey={line} fill={randomHexColor()} />
         ))}
-      </LineChart>
+      </BarChart>
     </ResponsiveContainer>
   );
 };
