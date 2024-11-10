@@ -76,19 +76,19 @@ const Home = () => {
       <div>
         <Card>
           {data ? (
-            <CardBody className="flex flex-wrap justify-between gap-5">
-              <div>
+            <>
+              <CardHeader>
                 <h4 className="text-lg font-semibold">{title}</h4>
-              </div>
-              <div className="flex justify-end gap-3">
+              </CardHeader>
+              <CardBody className="flex justify-end gap-3">
                 <Button color="danger" onClick={clear}>
                   <strong>Temizle</strong>
                 </Button>
                 <Button color="success" onClick={copy}>
                   <strong>Kopyala</strong>
                 </Button>
-              </div>
-            </CardBody>
+              </CardBody>
+            </>
           ) : (
             <CardBody>
               <form className="grid gap-3" onSubmit={handleSubmit}>
