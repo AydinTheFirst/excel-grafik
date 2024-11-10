@@ -1,4 +1,12 @@
-import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { Buffer } from "buffer";
 import excel from "exceljs";
 import { useState } from "react";
@@ -14,12 +22,10 @@ interface Data {
 const Home = () => {
   const [title, setTitle] = useState<string>("");
   const [data, setData] = useState<Data[]>();
+  const [type, setType] = useState<"bar" | "line">("bar");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get("file") as File;
+  const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.item(0);
 
     if (!file) {
       toast.error("Lütfen bir dosya seçin.");
@@ -69,7 +75,7 @@ const Home = () => {
             <h4 className="text-lg font-semibold">{title}</h4>
           </CardHeader>
           <CardBody>
-            <Chart data={data} />
+            <Chart data={data} type={type} />
           </CardBody>
         </Card>
       )}
@@ -81,6 +87,20 @@ const Home = () => {
                 <h4 className="text-lg font-semibold">{title}</h4>
               </CardHeader>
               <CardBody className="flex justify-end gap-3">
+                <Select
+                  defaultSelectedKeys={["bar"]}
+                  label="Grafik Türü"
+                  name="type"
+                  onChange={(e) => setType(e.target.value as "bar" | "line")}
+                  value="bar"
+                >
+                  <SelectItem key={"bar"} value="bar">
+                    Bar
+                  </SelectItem>
+                  <SelectItem key={"line"} value="line">
+                    Line
+                  </SelectItem>
+                </Select>
                 <Button color="danger" onClick={clear}>
                   <strong>Temizle</strong>
                 </Button>
@@ -91,18 +111,14 @@ const Home = () => {
             </>
           ) : (
             <CardBody>
-              <form className="grid gap-3" onSubmit={handleSubmit}>
-                <Input
-                  accept=".xlsx"
-                  isRequired
-                  label="Excel Dosyası"
-                  name="file"
-                  type="file"
-                />
-                <Button color="primary" type="submit">
-                  Tabloya Aktar
-                </Button>
-              </form>
+              <Input
+                accept=".xlsx"
+                isRequired
+                label="Excel Dosyası"
+                name="file"
+                onChange={handleSubmit}
+                type="file"
+              />
             </CardBody>
           )}
         </Card>

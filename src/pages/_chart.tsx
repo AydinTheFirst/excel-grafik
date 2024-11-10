@@ -3,6 +3,8 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,7 +16,12 @@ interface Data {
   name: string;
 }
 
-export const Chart = ({ data }: { data: Data[] }) => {
+interface ChartProps {
+  data: Data[];
+  type: "bar" | "line";
+}
+
+export const Chart = ({ data, type }: ChartProps) => {
   console.log(data);
 
   if (data.length === 0) {
@@ -26,9 +33,18 @@ export const Chart = ({ data }: { data: Data[] }) => {
 
   const lines = Object.keys(data[0]).filter((key) => key !== "name");
 
+  const ChartComponent = type === "bar" ? BarChart : LineChart;
+  const renderLines = (dataKey: string) => {
+    if (type === "bar") {
+      return <Bar dataKey={dataKey} fill={randomHexColor()} />;
+    }
+
+    return <Line dataKey={dataKey} stroke={randomHexColor()} type="monotone" />;
+  };
+
   return (
     <ResponsiveContainer width="100%">
-      <BarChart
+      <ChartComponent
         data={data}
         height={300}
         margin={{
@@ -44,10 +60,8 @@ export const Chart = ({ data }: { data: Data[] }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        {lines.map((line) => (
-          <Bar dataKey={line} fill={randomHexColor()} />
-        ))}
-      </BarChart>
+        {lines.map((line) => renderLines(line))}
+      </ChartComponent>
     </ResponsiveContainer>
   );
 };
