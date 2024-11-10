@@ -10,6 +10,7 @@ export default {
   theme: {
     extend: {
       container: {
+        padding: "1rem",
         center: true,
       },
     },

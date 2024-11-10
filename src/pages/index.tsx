@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, Input } from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { Buffer } from "buffer";
 import excel from "exceljs";
 import { useState } from "react";
@@ -12,7 +12,8 @@ interface Data {
 }
 
 const Home = () => {
-  const [data, setData] = useState<Data[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [data, setData] = useState<Data[]>();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +32,8 @@ const Home = () => {
     await workbook.xlsx.load(buffer);
     const worksheet = workbook.getWorksheet(1)!;
 
+    setTitle(worksheet.name);
+
     const columns = worksheet.getColumn(1).values.filter(Boolean);
     const values = worksheet.columns
       .slice(1)
@@ -48,11 +51,45 @@ const Home = () => {
     toast.success("Excel dosyası başarıyla yüklendi.");
   };
 
+  const clear = () => {
+    setTitle("");
+    setData(undefined);
+  };
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(data));
+    toast.success("Veri kopyalandı.");
+  };
+
   return (
-    <div className="container my-10 h-screen">
-      <div className="grid grid-cols-12 gap-3">
-        <div className="col-span-12 md:col-span-4">
-          <Card>
+    <div className="container my-10 grid max-w-xl gap-5">
+      {data && (
+        <Card className="h-96">
+          <CardHeader>
+            <h4 className="text-lg font-semibold">{title}</h4>
+          </CardHeader>
+          <CardBody>
+            <Chart data={data} />
+          </CardBody>
+        </Card>
+      )}
+      <div>
+        <Card>
+          {data ? (
+            <CardBody className="flex flex-wrap justify-between gap-5">
+              <div>
+                <h4 className="text-lg font-semibold">{title}</h4>
+              </div>
+              <div className="flex justify-end gap-3">
+                <Button color="danger" onClick={clear}>
+                  <strong>Temizle</strong>
+                </Button>
+                <Button color="success" onClick={copy}>
+                  <strong>Kopyala</strong>
+                </Button>
+              </div>
+            </CardBody>
+          ) : (
             <CardBody>
               <form className="grid gap-3" onSubmit={handleSubmit}>
                 <Input
@@ -67,11 +104,8 @@ const Home = () => {
                 </Button>
               </form>
             </CardBody>
-          </Card>
-        </div>
-        <div className="col-span-12 h-full md:col-span-8">
-          <Chart data={data} />
-        </div>
+          )}
+        </Card>
       </div>
     </div>
   );
